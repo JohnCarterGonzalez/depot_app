@@ -1,6 +1,7 @@
 require "test_helper"
 
 class ProductTest < ActiveSupport::TestCase
+  fixtures :products
   test "product attritbutes must not be empty" do 
     product = Product.new 
     assert product.invalid?
@@ -9,4 +10,51 @@ class ProductTest < ActiveSupport::TestCase
     assert product.errors[:image_url].any?
     assert product.errors[:price].any?
   end
+
+  test "product title must be unique - i18n" do 
+    product = Product.new(
+      title: products(:ruby).title,
+      description: "alksdjf",
+      price: 1,
+      image_url: products(:ruby).image_url
+    )
+    assert product.invalid?
+    assert_equal [I18n.translate('errors.messages.taken')], product.errors[:title]
+  end
+
+  test "product price must be positive" do 
+    product = Product.new(title: "book_title", 
+                          description: "skldjf", 
+                          image_url: "fgd.jpg")
+
+    product.price = -1 
+    assert product.invalid?
+    assert_equal ["must be greater than or equal to 0.01"], 
+      product.errors[:price]
+
+    product.price = 1 
+    assert product.valid?
+  end
+
+  def new_product(image_url)
+    product = Product.new(title: "book_title", 
+                          description: "skldjf", 
+                          price: 1,
+                          image_url: image_url)
+  end
+
+  test "product image_url must be formatted correctly" do
+    ok = %w{ fred.gif fred.jpg fred.png FRED.JPG FRED.Jpg
+    http://a.b.c/x/y/z/fred.gif }
+    bad = %w{ fred.doc fred.gif/more fred.gif.more }
+    ok.each do |image_url|
+      assert new_product(image_url).valid?,
+      "#{image_url} must be valid"
+    end
+    bad.each do |image_url|
+      assert new_product(image_url).invalid?,
+            "#{image_url} must be invalid"
+    end
+  end
+
 end
