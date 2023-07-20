@@ -7,11 +7,11 @@
 #   Character.create(name: "Luke", movie: movies.first)
 require 'faker'
 
-10.times do 
+10.times do |i|
   Product.create!(
     title: Faker::Book.title,
     description: Faker::Quote.matz,
-    image_url: Faker::Internet.domain_name,
+    image_url: "lorem_ipsim#{i}.jpg",
     price: Faker::Number.decimal(l_digits: 2)
   )
 end
