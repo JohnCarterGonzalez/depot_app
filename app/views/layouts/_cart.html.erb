@@ -1,0 +1,8 @@
+<#= rendered at application.html.erb %>
+<% if @cart and not @cart.line_items.empty? %>
+  <div id="cart" class="bg-green-900 p-6">
+    <%= render @cart %>
+  </div>
+<% else %> 
+  <div id="cart"></div>
+<% end %>
