@@ -10,7 +10,7 @@ class LineItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get new" do
+ test "should get new" do
     get new_line_item_url
     assert_response :success
   end
@@ -23,7 +23,7 @@ class LineItemsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
 
     assert_select 'h2', 'Your Cart'
-    assert_select 'li', "Programming Ruby 3.2.2" 
+    assert_select 'td', "Programming Ruby 3.2.2" 
   end
 
   test "should show line_item" do

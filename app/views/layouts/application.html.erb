@@ -15,8 +15,16 @@
       <%= image_tag 'lorem.jpg', alt: 'The Random Jpg' %>
       <h1><%= @page_title %></h1>
     </header>
+
     <section class="flex">
       <nav class="bg-green-900 p-6">
+
+        <% if @cart and not @cart.line_items.empty? %>
+          <div id="cart" class="bg-green-900 p-6">
+            <%= render @cart %>
+          </div>
+        <% end %>
+
         <ul class="text-gray-300 leading-8">
           <li><a href="/">Home</a></li>
           <li><a href="/questions">Questions</a></li>
@@ -28,5 +36,6 @@
         <%= yield %>
       </main>
     </section>
+
   </body>
 </html>
