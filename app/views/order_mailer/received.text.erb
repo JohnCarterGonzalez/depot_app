@@ -1,0 +1,7 @@
+Dear <%= @order.name %>
+Thank you for your order from the Depot App
+You orderd the following items:
+<%= render @order.line_items -%>
+
+You'll receive a second email once the order ships!
+
