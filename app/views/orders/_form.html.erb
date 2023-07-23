@@ -1,8 +1,9 @@
-<%= form_with(model: order) do |form| %>
+<%= form_with(model: order, class: "contents") do |form| %>
   <% if order.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(order.errors.count, "error") %> prohibited this order from being saved:</h2>
-
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2
+    font-medium rounded-lg mt-3">
+      <h2><%= pluralize(order.errors.count, "error") %>
+      prohibited this order from being saved:</h2>
       <ul>
         <% order.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,27 +12,29 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+  <div class="my-5">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: "input-field" %>
   </div>
 
-  <div>
-    <%= form.label :address, style: "display: block" %>
-    <%= form.text_area :address %>
+  <div class="my-5">
+    <%= form.label :address %>
+    <%= form.text_area :address, rows: 4, class: "input-field" %>
   </div>
 
-  <div>
-    <%= form.label :email, style: "display: block" %>
-    <%= form.text_field :email %>
+  <div class="my-5">
+    <%= form.label :email %>
+    <%= form.email_field :email, class: "input-field" %>
   </div>
 
-  <div>
-    <%= form.label :pay_type, style: "display: block" %>
-    <%= form.number_field :pay_type %>
+  <div class="my-5">
+    <%= form.label :pay_type %>
+    <%= form.select :pay_type, Order.pay_types.keys,
+    { prompt: 'Select a payment method' },
+    class: "input-field" %>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="inline">
+    <%= form.submit 'Place Order', class: "rounded-lg py-3 px-5 bg-green-200 text-black inline-block font-medium cursor-pointer" %>
   </div>
 <% end %>
