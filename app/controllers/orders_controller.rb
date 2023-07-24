@@ -25,10 +25,14 @@ class OrdersController < ApplicationController
   # POST /orders or /orders.json
   def create
     @order = Order.new(order_params)
+    @order.add_line_items_from_cart(@cart)
 
     respond_to do |format|
       if @order.save
-        format.html { redirect_to order_url(@order), notice: "Order was successfully created." }
+        Cart.destroy(session[:cart_id])
+        session[:cart_id] = nil
+
+        format.html { redirect_to store_index_url(@order), notice: "Thank you for your order." }
         format.json { render :show, status: :created, location: @order }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -74,6 +78,13 @@ class OrdersController < ApplicationController
     def ensure_cart_isnt_empty
       if @cart.line_items.empty?
         redirect_to store_index_url, notice: 'Your cart is empty'
+      end
+    end
+
+    def add_line_items_from_cart(cart)
+      cart.line_items.each do |item|
+        item.cart = nil
+        line_items << item
       end
     end
 end
