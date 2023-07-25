@@ -1,41 +1,55 @@
 require "application_system_test_case"
 
 class OrdersTest < ApplicationSystemTestCase
-  test "check dynamic fields" do
+  include ActiveJob::TestHelper
+    
+
+  test "check routing number" do
+
+    LineItem.delete_all
+    Order.delete_all
+
     visit store_index_url
 
-    click_on 'Add to Cart', match: :first
+    visit store_index_url
+
+    first('.catalog li').click_on 'Add to Cart'
 
     click_on 'Checkout'
 
-    assert has_no_field? 'Routing number'
-    assert has_no_field? 'Account number'
-    assert has_no_field? 'Credit card number'
-    assert has_no_field? 'Expiration date'
-    assert has_no_field? 'Po number'
+    fill_in 'order_name', with: 'Johnny Lucky'
+    fill_in 'order_address', with: '123 Main Street'
+    fill_in 'order_email', with: 'johnny@example.com'
 
-    select 'Check', from: 'Pay type'
+    assert_no_selector "#order_routing_number"
 
-    assert has_field? 'Routing number'
-    assert has_field? 'Account number'
-    assert has_no_field? 'Credit card number'
-    assert has_no_field? 'Expiration date'
-    assert has_no_field? 'Payment_Opt number'
+    select 'Check', from: 'pay_type'
 
-    select 'Credit card', from: 'Pay type'
 
-    assert has_no_field? 'Routing number'
-    assert has_no_field? 'Account number'
-    assert has_field? 'Credit card number'
-    assert has_field? 'Expiration date'
-    assert has_no_field? 'Payment_Opt number'
+    assert_selector "#order_routing_number"
 
-    select 'Purchase order', from: 'Pay type'
+    fill_in "Routing #", with: "123456"
+    fill_in "Account #", with: "987654"
 
-    assert has_no_field? 'Routing number'
-    assert has_no_field? 'Account number'
-    assert has_no_field? 'Credit card number'
-    assert has_no_field? 'Expiration date'
-    assert has_field? 'Payment_Opt number'
-  end
+    perform_enqueued_jobs do
+      click_button "Place Order"
+    end
+
+    orders = Order.all
+    assert_equal 1, orders.size
+
+    order = orders.first
+
+    assert_equal "John Carter",      order.name
+    assert_equal "123 Main Street",  order.address
+    assert_equal "dumemailfordev@gmail.com", order.email
+    assert_equal "Check",            order.pay_type
+    assert_equal 1, order.line_items.size
+
+    mail = ActionMailer::Base.deliveries.last
+    assert_equal ["dumemailfordev@gmail.com"],                 mail.to
+    assert_equal 'John Carter <dumemailfordev@gmail.com',      mail[:from].value
+    assert_equal "Depot App Order Confirmation",               mail.subject
+
+  end 
 end

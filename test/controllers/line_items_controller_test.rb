@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class LineItemsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -10,29 +10,20 @@ class LineItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
- test "should get new" do
+  test "should get new" do
     get new_line_item_url
     assert_response :success
   end
 
   test "should create line_item" do
-    assert_difference("LineItem.count") do
+    assert_difference('LineItem.count') do
       post line_items_url, params: { product_id: products(:ruby).id }
     end
 
     follow_redirect!
 
     assert_select 'h2', 'Your Cart'
-    assert_select 'td', 'Programming Ruby 3.2.2'
-  end
-
-  test "should create line_item via turbo_stream" do
-    assert_difference("LineItem.count") do
-      post line_items_url, params: { product_id: products(:ruby).id }, as: :turbo_stream
-    end
-
-    assert_response :success
-    assert_match /<tr class="line-item-highlight">/, @response.body
+    assert_select 'td', "Programming Ruby 1.9"
   end
 
   test "should show line_item" do
@@ -46,16 +37,26 @@ class LineItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update line_item" do
-    patch line_item_url(@line_item), params: { line_item: { product_id: @line_item.product_id } }
+    patch line_item_url(@line_item),
+      params: { line_item: { product_id: @line_item.product_id } }
     assert_redirected_to line_item_url(@line_item)
   end
 
   test "should destroy line_item" do
-    assert_difference("LineItem.count", -1) do
+    assert_difference('LineItem.count', -1) do
       delete line_item_url(@line_item)
     end
 
     assert_redirected_to line_items_url
   end
 
+  test "should create line_item via ajax" do
+    assert_difference('LineItem.count') do
+      post line_items_url, params: { product_id: products(:ruby).id },
+        xhr: true
+    end 
+
+    assert_response :success
+    assert_match /<tr class=\\"line-item-highlight/, @response.body
+  end
 end

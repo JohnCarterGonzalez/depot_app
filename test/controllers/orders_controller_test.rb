@@ -1,5 +1,4 @@
-
-require "test_helper"
+require 'test_helper'
 
 class OrdersControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -14,7 +13,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   test "requires item in cart" do
     get new_order_url
     assert_redirected_to store_index_path
-    assert_equal 'Your cart is empty', flash[:notice]
+    assert_equal flash[:notice], 'Your cart is empty'
   end
 
   test "should get new" do
@@ -25,13 +24,13 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create order" do
-    assert_difference("Order.count") do
+    assert_difference('Order.count') do
       post orders_url, params: { order: { address: @order.address,
         email: @order.email, name: @order.name,
         pay_type: @order.pay_type } }
     end
 
-    assert_redirected_to store_index_url
+    assert_redirected_to store_index_url(locale: 'en')
   end
 
   test "should show order" do
@@ -50,7 +49,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy order" do
-    assert_difference("Order.count", -1) do
+    assert_difference('Order.count', -1) do
       delete order_url(@order)
     end
 
